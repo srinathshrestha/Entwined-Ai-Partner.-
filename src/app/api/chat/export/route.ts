@@ -1,30 +1,25 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
+import { connectDB } from "@/lib/mongodb";
+import { Companion } from "@/lib/models/Companion";
+import { Conversation } from "@/lib/models/Conversation";
+import { Message, IMessage } from "@/lib/models/Message";
 
 // GET endpoint to export chat history
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
-    const { userId: clerkId } = await auth();
-    if (!clerkId) {
+    const user = await getCurrentUser();
+    if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Get user and their conversation
-    const user = await db.user.findUnique({ where: { clerkId } });
-    if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    await connectDB();
 
-    const companion = await db.companion.findFirst({
-      where: { userId: user.id },
-    });
+    // Get user's companion
+    const companion = await Companion.findOne({ userId: user._id });
     if (!companion) {
       return new Response(JSON.stringify({ error: "Companion not found" }), {
         status: 404,
@@ -33,8 +28,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Get conversation
-    const conversation = await db.conversation.findFirst({
-      where: { userId: user.id, companionId: companion.id },
+    const conversation = await Conversation.findOne({
+      userId: user._id,
+      companionId: companion._id,
     });
 
     if (!conversation) {
@@ -44,10 +40,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all messages from the conversation (including deleted ones for export)
-    const messages = await db.message.findMany({
-      where: { conversationId: conversation.id },
-      orderBy: { createdAt: "asc" },
-    });
+    const messages = await Message.find({
+      conversationId: conversation._id,
+    }).sort({ createdAt: 1 });
 
     // Format export data
     const exportData = {
@@ -57,12 +52,12 @@ export async function GET(req: NextRequest) {
         companionName: companion.name,
       },
       conversation: {
-        id: conversation.id,
+        id: conversation._id.toString(),
         startedAt: conversation.createdAt.toISOString(),
         messageCount: messages.length,
       },
-      messages: messages.map((msg) => ({
-        id: msg.id,
+      messages: messages.map((msg: IMessage) => ({
+        id: msg._id.toString(),
         role: msg.role.toLowerCase(),
         content: msg.content,
         timestamp: msg.createdAt.toISOString(),
