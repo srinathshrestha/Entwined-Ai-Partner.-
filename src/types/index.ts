@@ -1,16 +1,17 @@
-import {
-  User,
-  Companion,
-  RelationshipDynamic,
-  Conversation,
-  Message,
-  Memory,
-  UserPreferences,
-  MessageRole,
-  MemoryType,
-  RelationshipStatus,
-  DeletedBy,
-} from "@prisma/client";
+import { MessageRole, DeletedBy, IMessage } from "@/lib/models/Message";
+
+// Re-export Mongoose model interfaces and enums that are used throughout the app
+export type User = any; // Defined in @/lib/models/User
+export type Companion = any; // Defined in @/lib/models/Companion  
+export type Conversation = any; // Defined in @/lib/models/Conversation
+export type Message = IMessage; // Use IMessage interface from models
+export type Memory = any; // Defined in @/lib/models/Memory
+export type UserPreferences = any; // Defined in @/lib/models/UserPreferences
+
+// Types that need to be defined here since they're not in Mongoose models
+export type RelationshipDynamic = any;
+export type MemoryType = "RELATIONSHIP" | "EXPERIENCE" | "PREFERENCE" | "TRAIT";
+export type RelationshipStatus = "ACTIVE" | "PAUSED" | "ENDED";
 
 // =============================================================================
 // SIMPLIFIED PERSONALITY SYSTEM
@@ -167,24 +168,6 @@ export interface OnboardingProgress {
   isComplete: boolean;
   nextStep?: number;
 }
-
-// =============================================================================
-// EXPORT PRISMA TYPES
-// =============================================================================
-
-export type {
-  User,
-  Companion,
-  RelationshipDynamic,
-  Conversation,
-  Message,
-  Memory,
-  UserPreferences,
-  MessageRole,
-  MemoryType,
-  RelationshipStatus,
-  DeletedBy,
-};
 
 // =============================================================================
 // OPTION CONSTANTS
