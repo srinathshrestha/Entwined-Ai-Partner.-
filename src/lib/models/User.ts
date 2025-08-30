@@ -6,9 +6,12 @@ export interface IUser extends Document {
   name: string;
   password: string;
   image?: string;
+  avatar?: string;
+  gradientId?: string;
   emailVerified: boolean;
   emailVerificationToken?: string;
   emailVerificationTokenExpiry?: Date;
+  pendingEmail?: string;
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
   createdAt: Date;
@@ -36,6 +39,14 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: null,
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    gradientId: {
+      type: String,
+      default: "sunset",
+    },
     emailVerified: {
       type: Boolean,
       default: false,
@@ -45,6 +56,11 @@ const UserSchema = new Schema<IUser>(
     },
     emailVerificationTokenExpiry: {
       type: Date,
+    },
+    pendingEmail: {
+      type: String,
+      lowercase: true,
+      trim: true,
     },
     resetPasswordToken: {
       type: String,

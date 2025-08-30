@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import MinimalChatInput from "@/components/chat/MinimalChatInput";
 import MessageActionsV2 from "@/components/chat/MessageActionsV2";
 import MarkdownRenderer from "@/components/ui/markdown-renderer";
+import ChatEmptyState from "@/components/chat/ChatEmptyState";
 import { SimplifiedMemory } from "@/types";
 
 interface ChatMessage {
@@ -42,8 +43,7 @@ export default function SimplifiedChatPageV2() {
   const router = useRouter();
 
   // Use the new onboarding check hook
-  const { onboardingStatus, isChecking, needsOnboarding } =
-    useOnboardingCheck();
+  const { isChecking, needsOnboarding } = useOnboardingCheck();
 
   // States
   const [companion, setCompanion] = useState<CompanionInfo | null>(null);
@@ -298,15 +298,15 @@ export default function SimplifiedChatPageV2() {
   }
 
   // Loading states
-  if (status === "loading" || isChecking) {
+  if (status !== "authenticated" || isChecking) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">
-            {status === "loading"
-              ? "Loading your session..."
-              : "Checking your progress..."}
+            {isChecking
+              ? "Checking your progress..."
+              : "Loading your session..."}
           </p>
         </div>
       </div>
@@ -375,6 +375,10 @@ export default function SimplifiedChatPageV2() {
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
+        ) : messages.length === 0 ? (
+          <ChatEmptyState 
+            companionName={companion?.name || "Your AI Companion"}
+          />
         ) : (
           <AnimatePresence>
             {messages.map((message) => {
@@ -399,7 +403,7 @@ export default function SimplifiedChatPageV2() {
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       {isUser ? (
                         <AvatarImage
-                          src={session.user.image || "/placeholder-avatar.png"}
+                          src={session?.user?.image || "/placeholder-avatar.png"}
                         />
                       ) : (
                         <AvatarImage
@@ -615,7 +619,7 @@ export default function SimplifiedChatPageV2() {
         <div className="max-w-4xl mx-auto">
           <MinimalChatInput
             onSendMessage={handleSendMessage}
-            userId={session.user.id}
+            userId={(session?.user as { id: string })?.id || ""}
             companionId={companion?.id || ""}
             isLoading={isLoading}
             placeholder={`Message ${companion?.name || "your companion"}...`}

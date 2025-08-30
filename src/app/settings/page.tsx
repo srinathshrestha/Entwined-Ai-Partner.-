@@ -434,20 +434,32 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="bg-background/90 backdrop-blur-sm border-b border-border px-4 py-4 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push("/chat/simplified")}
-              className="text-purple-600"
+              className="text-purple-600 flex-shrink-0"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Chat
+              <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Chat</span>
+              <span className="sm:hidden">Back</span>
             </Button>
-            <div className="flex items-center gap-2">
-              <SettingsIcon className="h-6 w-6 text-purple-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+            <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+              <SettingsIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 flex-shrink-0" />
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">Settings</h1>
             </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/profile")}
+              className="flex items-center gap-1 sm:gap-2"
+            >
+              <User className="h-4 w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Profile</span>
+            </Button>
           </div>
         </div>
       </div>
