@@ -28,7 +28,6 @@ import {
   Play,
   Github,
   Twitter,
-  Loader2,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -141,7 +140,7 @@ export default function HomePage() {
         className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border/50"
       >
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
               <Heart className="h-5 w-5 text-white" />
             </div>
@@ -150,22 +149,34 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
             <ThemeToggle />
             {!session && (
               <>
                 <Button
                   variant="ghost"
+                  size="sm"
                   onClick={() => router.push("/auth/signin")}
+                  className="hidden sm:inline-flex"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.push("/auth/signin")}
+                  className="sm:hidden"
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xs sm:text-sm px-3 sm:px-4"
                 >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Get Started</span>
+                  <span className="sm:hidden">Start</span>
+                  <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </>
             )}
